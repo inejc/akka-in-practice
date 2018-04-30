@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-  <title>TODO</title>
+  <title>Akka in Practice</title>
 
   <link rel="stylesheet" href="css/reveal.css">
   <link rel="stylesheet" href="css/theme/white.css">
@@ -25,11 +25,43 @@
     #license {
       font-size: medium;
     }
-    .reveal .max {
+    .reveal section img {
+      border: none;
+      box-shadow: none;
       height: 80%;
       max-height: 80%;
       width:  80%;
       max-width: 80%;
+    }
+    .reveal svg {
+      background-color: white;
+      height:           400px;
+      width:            100%;
+    }
+    .reveal .node {
+      fill: gray;
+    }
+    .reveal .hidden {
+      visibility: hidden;
+    }
+    .reveal .node.member {
+      fill: steelblue;
+    }
+    .reveal .join {
+      stroke:           gray;
+      stroke-width:     4;
+      stroke-dasharray: 8, 8;
+    }
+    .reveal .join.self {
+      fill: none;
+    }
+    .reveal .join.hidden {
+      display: none;
+    }
+    .reveal ellipse.cluster {
+      fill:         none;
+      stroke:       steelblue;
+      stroke-width: 4;
     }
   </style>
   </head>
@@ -40,7 +72,1588 @@
 <!-- ########################################################################################### -->
 
 <section data-markdown><script type="text/template">
-# TODO
+# Akka in Practice
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# What is Akka?
+
+>Akka is a toolkit for building highly concurrent, distributed and resilient message-driven
+applications<br>for Java and Scala.
+
+[akka.io](http://akka.io)
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Once more: what is Akka?
+
+>Akka provides a rich collection of open source libraries for building
+[Reactive](http://www.reactivemanifesto.org) systems.
+
+[Heiko Seeberger](https://heikoseeberger.rocks)
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# What is Reactive?
+
+![Reactive](images/reactive.svg "Reactive")
+
+[Reactive Manifesto](http://www.reactivemanifesto.org)
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# The Actor Model
+
+>The actor is the fundamental unit of computation embodying processing, storage and communication.
+
+[Carl Hewitt](https://channel9.msdn.com/Shows/Going+Deep/Hewitt-Meijer-and-Szyperski-The-Actor-Model-everything-you-wanted-to-know-but-were-afraid-to-ask)
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Behavior
+
+- Create new actors
+- Send messages to known actors
+- Designate the behavior for the next message
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Actor Systems
+
+>One actor is no actor, they come in systems. Therefore an actor must have an address, so that one
+actor can send a message to another one.
+
+[Carl Hewitt](https://channel9.msdn.com/Shows/Going+Deep/Hewitt-Meijer-and-Szyperski-The-Actor-Model-everything-you-wanted-to-know-but-were-afraid-to-ask)
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Benefits of using Actors
+
+- Loose coupling through
+  - share-nothing and
+  - asynchronous messaging
+- Resilience because of
+  - compartmentalization and
+  - delegation of failure handling
+- Elasticity thanks to location transparency
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Akka Actors
+
+![Akka actors](images/akka-actor.svg "Akka actors")
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# `ActorRef[T]`
+
+``` scala
+val hello: ActorRef[Hello.Command] = ???
+hello ! Hello.SayHello               // SayHello extends Command
+```
+
+- Address of an actor
+- Returned by actor factories
+- Use `!` to send a message of type `T` to it
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# `Behavior[T]`
+
+- Essentially `Message => Next Behavior`
+- Messages are either of type `T` or a `Signal`
+- `Behaviors` contains factories, e.g. `empty`
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Akka Actor System
+
+![Akka actor system](images/akka-actor-system.svg "Akka actor system")
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# `ActorSystem[T]`
+
+- Created with the behavior of the root actor
+- Implements `ActorRef[T]`
+- Creates thread pools, scheduler, etc.
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Minimal Example
+
+``` scala
+object Playground {
+
+  sealed trait Command
+
+  def main(args: Array[String]): Unit =
+    ActorSystem(Playground(), "playground")
+
+  def apply(): Behavior[Command] =
+    Behaviors.empty
+}
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Important special `Behaviors`
+
+- `same`: reuse the previous behavior
+- `empty`: handle no message at all
+- `stopped`: terminate the actor voluntarily
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# `Behaviors` for Message Handling
+
+- `receiveMessage`: `T => Behavior`
+- `receive`: (`ActorContext, T) => Behavior`
+- `receive(Message)Partial`: partial instead of total function
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Example: Fire and Forget Messaging
+
+``` scala
+object Playground extends Logging {
+
+  sealed trait Command
+  final case object Ping extends Command
+
+  def main(args: Array[String]): Unit = {
+    val system = ActorSystem(Playground(), "playground")
+    system ! Ping // sending to system is rarely useflul!
+  }
+
+  def apply(): Behavior[Command] =
+    Behaviors.receiveMessage {
+      case Ping =>
+        logger.info("Pong")
+        Behaviors.same
+    }
+}
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# `ActorContext[T]`
+
+- Access to `self`, `system` and `children`
+- `spawn` or `spawnAnonymous` child actors
+- `stop` child actors
+- `watch(With)` other actors
+- `schedule` sending messages to other actors
+- Create `messageAdapter`s to ingest different protocols
+- ...
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Getting an early `ActorContext`
+
+``` scala
+Behaviors.setup { context =>
+  // do something with the ActorContext, e.g. spawn child actors
+  Behaviors.receiveMessage(...)
+}
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Example: Create a Child Actor
+
+``` scala
+object Playground {
+
+  sealed trait Command
+
+  def main(args: Array[String]): Unit =
+    ActorSystem(Playground(), "playground")
+
+  def apply(): Behavior[Command] =
+    Behaviors.setup { context =>
+      val pingPong = context.spawn(PingPong(), "ping-pong")
+      pingPong ! PingPong.Ping
+      Behavior.empty
+    }
+}
+
+object PingPong extends Logging {
+
+  sealed trait Command
+  final case object Ping extends Command
+
+  def apply(): Behavior[Command] =
+    Behaviors.receiveMessage {
+      case Ping =>
+        logger.info("Pong")
+        Behaviors.same
+    }
+}
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Example: Request-Reply Messaging
+
+``` scala
+object Playground {
+
+  sealed trait Command
+
+  def main(args: Array[String]): Unit =
+    ActorSystem(Playground(), "playground")
+
+  def apply(): Behavior[Command] =
+    Behaviors.setup { context =>
+      val pingPong = context.spawn(PingPong(), "ping-pong")
+      context.spawn(PongReceiver(pingPong), "pong-receiver")
+      Behavior.empty
+    }
+}
+
+object PingPong {
+
+  sealed trait Command
+  final case class Ping(replyTo: ActorRef[Pong.type]) extends Command
+  final case object Pong
+
+  def apply(): Behavior[Command] =
+    Behaviors.receiveMessage {
+      case Ping(replyTo) =>
+        replyTo ! Pong
+        Behaviors.same
+    }
+}
+
+object PongReceiver extends Logging {
+
+  def apply(pingPong: ActorRef[PingPong.Command]): Behavior[PingPong.Pong.type] =
+    Behaviors.setup { context =>
+      pingPong ! PingPong.Ping(context.self)
+
+      Behaviors.receiveMessage {
+        case PingPong.Pong =>
+          logger.info("Pong")
+          Behaviors.same
+      }
+    }
+}
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Watching (aka Lifecycle Monitoring)
+
+- `ActorContext.watch(other)`:<br>on termination of `other` the `Terminated` signal is received
+- Not handling `Terminated` results in a `DeathPactException`
+- `ActorContext.watchWith(other, someMessage)`:<br>`someMessage` is received instead of the `Terminated` signal
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Signal Handling
+
+``` scala
+Behaviors.receiveSignal {
+  case (context, Terminated(actor)) => // or PostStop or PreRestart
+    // do something
+    Behaviors.same
+}
+
+Behaviors
+  .receiveMessage(...)
+  .receiveSignal {
+    case ... => ...
+  }
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Exercise: Accounts: Message Protocol
+
+- Create the object `Accounts`
+- Define `Command` and its only inhabitant `CreateAccount`:
+  - Add `username: String`
+  - Add `replyTo: ActorRef[CreateAccountReply]`
+- Define `CreateAccountReply` and its two inhabitants `UsernameTaken` and `AccountCreated`
+  - Add `username: String` to `AccountCreated`
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Exercise: Accounts: Behavior
+
+- Keep track of usernames with a parameter of type `Set[String]`
+- On receiving `CreateAccount`:
+  - If `username` taken, reply with `UsernameTaken`,
+  - else reply with `AccountCreated` and
+  - update the behavior with the `username`
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Exercise: Accounts: Create the Actor
+
+- Change the behavior of `Main`:
+  - Create an `Accounts` actor,
+  - watch it and
+  - return a behavior handling the `Terminated` signal
+- On termination of `Accounts`:
+  - Log an error
+  - Shutdown by stopping `Main`
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Testing
+
+- `BehaviorTestKit` for synchronous behavior testing
+- `ActorTestKit` for asynchronous actor Testing
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# `BehaviorTestKit`: Messaging
+
+``` scala
+object PingPongBehaviorTests extends TestSuite {
+  import PingPong._
+
+  override def tests: Tests =
+    Tests {
+      'replyWithPong - {
+        val pingPong  = BehaviorTestKit(PingPong())
+        val pongInbox = TestInbox[Pong.type]()
+        pingPong.run(Ping(pongInbox.ref))
+        pongInbox.expectMessage(Pong)
+      }
+    }
+}
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# `BehaviorTestKit`: Effects
+
+``` scala
+object PlaygroundBehaviorTests extends TestSuite {
+
+  override def tests: Tests =
+    Tests {
+      'spawnPingPong - {
+        val main = BehaviorTestKit(Playground())
+        main.expectEffectPF { case Spawned(_, "ping-pong", _) => () }
+        assert(main.currentBehavior == Behaviors.empty)
+      }
+    }
+}
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# `ActorTestKit`
+
+``` scala
+object PingPongActorTests extends TestSuite with ActorTestKit {
+  import PingPong._
+
+  override def tests: Tests =
+    Tests {
+      'replyWithPing - {
+        val pingPong  = spawn(PingPong())      // real actor
+        val pongProbe = TestProbe[Pong.type]()
+        pingPong ! Ping(pongProbe.ref)         // async. messaging
+        pongProbe.expectMessage(Pong)
+      }
+    }
+
+  override def utestAfterAll(): Unit = {
+    shutdownTestKit()                          // shut down the system
+    super.utestAfterAll()
+  }
+}
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Exercise: Testing
+
+- Create `AccountsBehaviorTests` testing the full protocol
+- Create `AccountsActorTests` testing the full protocol
+- Create `MainTests` verifying the effects `Spawned` and `Watched`
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Configuration
+
+- [HOCON](https://github.com/lightbend/config) resource file named `application.conf`
+- Program access via `ActorSystem.settings.config`
+- Or better via the [pureconfig](https://github.com/pureconfig/pureconfig) library
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Example: Configuration
+
+``` json
+akka {
+  loggers          = [de.heikoseeberger.akkalog4j.Log4jLogger]
+  logging-filter   = de.heikoseeberger.akkalog4j.Log4jLoggingFilter
+  ...
+}
+
+chakka-iam {
+  some-duration = 1 second
+}
+```
+
+``` scala
+final case class Config(someDuration: FiniteDuration)
+val config = loadConfigOrThrow[Config]("chakka-iam")
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Exercise: Configuration
+
+- In `Accounts`:
+  - Create the case class `Config` with `usernameRegex: Regex`
+  - Add `config: Config` as a parameter to `apply`
+  - Add the reply `UsernameInvalid`
+  - Adjust the behavior to use the `Regex` to validate usernames
+- In `Main`:
+  - Add `accounts: Accounts.Config` to `Config`
+  - Adjust spawning `Accounts`
+- Adjust `application.conf` accordingly, use """\w+"""
+- Adjust the tests
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Coordinated Shutdown
+
+- Extension to stop actors and services in well defined order
+- Order defined by `akka.coordinated-shutdown.phases`
+- Tasks can be registered to run during specific phases
+- Shutdown can be `run` with a `Reason`
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Example: Coordinated Shutdown
+
+``` scala
+import akka.actor.typed.scaladsl.adapter._
+
+val shutdown = CoordinatedShutdown(context.system.toUntyped)
+
+shutdown.addTask(PhaseServiceUnbind, "api.unbind") { () =>
+  binding.unbind()
+}
+
+shutdown.run(TopLevelActorTerminated)
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Exercise: Coordinated Shutdown
+
+- Run coordinated shutdown in `Main` instead of stopping
+- Create `TopLevelActorTerminated` extending `Reason`
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Akka Streams
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Streams
+
+> You could not step twice into the same river.
+
+[Heraclitus](https://en.wikiquote.org/wiki/Heraclitus)
+
+- Streams are volatile
+- Streams can be unbounded
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Reactive Streams
+
+> Reactive Streams is an initiative to provide a standard for asynchronous stream processing with non-blocking back pressure.
+
+[reactive-streams.org](http://www.reactive-streams.org)
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Back Pressure
+
+![Reactive Streams](images/reactive-streams.svg "Reactive Streams")
+
+- Upstream may push data only if downstream signals demand
+- Data and demand are conveyed asynchronously
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Akka Streams
+
+- Implementation of Reactive Streams based on actors
+- Exhaustive model of bounded stream processing
+- Supreme compositionality
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Blueprints and Materialization
+
+- Blueprints are defined as `Graph`s:
+  - Immutable, composable and reusable
+  - Built by connecting existing stages
+- Execution requires explicit materialization:
+  - Creation and execution of the processing engine
+  - Interaction with the engine via materialized values
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Linear Streams
+
+![Linear Streams](images/akka-streams.svg "Linear Streams")
+
+- `Source`: a stage with one output
+- `Flow`: a stage with one input and one output
+- `Sink`: a stage with one input
+- `RunnableGraph`: no unconnected ends – can be `run`
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# How to connect Stages
+
+``` scala
+source.via(flow)               // Source[A, M1]
+source.viaMat(flow)(Keep.both) // Source[A, (M1, M2)]
+
+source.to(sink)                // RunnableGraph[A, M1]
+source.toMat(sink)(Keep.right) // RunnableGraph[A, M2]
+
+source.runWith(sink)           // M2
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Group Exercise: "Hello, World!"
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Some ways to create Stages
+
+``` scala
+Source.single(a)       // Source[A, NotUsed]
+Source(as)             // Source[A, NotUsed]
+Source.fromIterator(f) // Source[A, NotUsed]
+Source.maybe[A]        // Source[A, Promise[Option[A]]]
+
+Flow[A]                // Flow[A, A, NotUsed]
+
+Sink.head[A]           // Sink[A, Future[Done]]
+Sink.foreach(f)        // Sink[A, Future[Done]]
+Sink.fold(b)(f)        // Sink[A, Future[B]]
+
+FileIO.fromPath(file)  // Source[ByteString, Future[IOResult]]
+FileIO.toPath(file)    // Sink[ByteString, Future[IOResult]]
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Some built-in Stages
+
+``` scala
+flow.take(42)                             // Flow[A, A, M]
+flow.drop(42)                             // Flow[A, A, M]
+flow.filter(f)                            // Flow[A, A, M]
+flow.map(f: A => B)                       // Flow[A, B, M]
+flow.mapConcat(f: A => Iterable[B])       // Flow[A, B, M]
+flow.flatMapConcat(f: A => Source[B, M2]) // Flow[A, B, M]
+```
+
+See the [documentation](http://doc.akka.io/docs/akka/current/scala/stream/stages-overview.html) for more information about stages
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Communicating with Actors
+
+- Sending a message to an actor from a stream is trivial
+- But how to get a reply?
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Ask Pattern
+
+``` scala
+import akka.actor.typed.scaladsl.AskPattern.Askable
+
+implicit val askTimeout: Timeout  = ???
+implicit val scheduler: Scheduler = ???
+
+val reply: Future[Reply] =
+  actor ? ((replyTo: ActorRef[Reply]) => Request("arg", replyTo))
+
+// Or better use come spicy curry:
+
+def request(arg: String)(replyTo: ActorRef[Reply]): Request =
+  Request(arg, replyTo)
+
+val reply: Future[Reply] =
+  actor ? request("arg")
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Exercise: Loading Accounts
+
+- Add `Accounts.load`
+  - taking `askTimeout` and `accounts: ActorRef[CreateAccount]`,
+  - returning a flow from `ByteString` to `CreateAccountReply`,
+  - parsing the input as usernames line by line and
+  - asking `accounts` to create an account for each username
+  - Hint: use `Framing.delimiter`
+- In `Main` run a stream
+  - from the "./accounts" file
+  - via `Accounts.load`
+  - to a `Sink.onFold` counting invalid, taken and created and
+  - log the result
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Akka HTTP
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Akka HTTP
+
+- Successor of [spray](http://spray.io)
+- One major change: built on top of Akka Streams
+  - Server is source of incoming connections
+  - Request and response are sources of bytes
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Starting a HTTP Server
+
+``` scala
+Http()                                   // Implicit untyped ActorSystem!
+  .bindAndHandle(handler, address, port) // Future[ServerBinding]
+```
+
+- `handler` is of type `Flow[HttpRequest, HttpResponse, Any]`
+- Attention: Don't forget to deal with the result!
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Routing DSL
+
+``` scala
+def route: Route = {
+  import Directives._
+
+  pathSingleSlash {     // Path matching
+    get {               // HTTP verb filtering
+      complete {
+        "Hello, World!" // Completing with a String!?!
+      }
+    }
+  }
+}
+```
+
+- Convenient way to define a HTTP handler flow
+- For conversion an implicit untyped `ActorSystem` is needed
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Directives: Building Blocks for Routes
+
+``` scala
+pathPrefix("echo") {
+  get {
+    parameter("value") { value =>
+      complete(value)
+    }
+  }
+}
+```
+
+- Filter according to some logic, e.g. path or HTTP verb
+- Extract values, e.g. parameters or body
+- Interact with domain logic and
+- Finally complete, redirect or reject the request
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Some Directives: Path Matching
+
+``` scala
+pathSingleSlash { ... }
+path("users") { ... }
+pathPrefix("users") { ... }
+pathEnd { ... }
+path("users" / Segment) { userName => ... } // String
+path("user" / IntNumber) { userId => ... }  // Int
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Some Directives: HTTP Verbs
+
+``` scala
+delete { ... }
+get { ... }
+post { ... }
+put { ... }
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Some Directives: Extract Values
+
+``` scala
+entity(as[Foo]) { foo => ... }
+extractRequest { request => ... }            // Usually not needed
+extractUri { uri => ... }
+parameter("seqNo") { seqNo => }              // String
+parameter('seqNo.as[Long] ? 0L) { seqNo => } // Long
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Composition of Routes
+
+``` scala
+pathPrefix("iam") {
+  pathEnd {
+    post {
+      ...
+    }
+  } ~
+  path(Segment) { username =>
+    delete {
+      ...
+    }
+  }
+}
+```
+
+- Routes are composed with `~`
+- If the current rejects, the next is tried
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Exercise: Api
+
+- Create the object `Api`
+- Add a `route` method completing GET to "iam" with `OK`
+- Add an `apply` method:
+  - Binding the `Route` to configurable `address` and `port`
+  - On failure shutdown with reason `BindFailure`
+  - On success add
+    - a task to unbind in `PhaseServiceUnbind` and
+    - a task to wait for a configurable `requestsDoneAfter` duration in `PhaseServiceRequestsDone`
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Marshalling
+
+- Requests are completed with a `ToResponseMarshallable`
+- Any object which has a `ToResponseMarshaller` can be used
+- Akka HTTP defines marshallers for many common types, e.g.
+  - `String`     => 200, text/plain
+  - `StatusCode` => $statusCode, text/plain
+  - See the [documentation](http://doc.akka.io/docs/akka/current/scala/http/common/marshalling.html#predefined-marshallers) for details
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# JSON Marshalling
+
+- Requests can be completed with domain objects
+- Responses have content type `application/json`
+- Akka HTTP supports spray-json and Jackson
+- [akka-http-json](https://github.com/hseeberger/akka-http-json) supports other JSON libraries
+  - Argonaut, circe, Json4s, Play JSON and uPickle
+  - We are using circe
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Exercise: Sign Up
+
+- Add `accounts: ActorRef[Accounts.Command]` to `Api.apply`
+- In `Api` create the case class `SignUp` with `username: String`
+- Amend `Api.route` such that posting to "iam/accounts":
+  - Extracts `SignUp`,
+  - asks `accounts` to `CreateAccount` and
+  - returns appropriate HTTP status codes
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Akka HTTP Session
+
+- [akka-http-session](https://github.com/softwaremill/akka-http-session) is a 3rd party library
+- It offers client side sessions and more for Akka HTTP
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Session Manager
+
+``` scala
+implicit val sessions: SessionManager[String] = // for a username
+  new SessionManager(SessionConfig.fromConfig())
+```
+
+``` json
+akka.http.session {
+  server-secret = "random string, at least 64 characters"
+}
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Session Directives
+
+``` scala
+setSession(oneOff, usingCookies, username) {
+  complete(NoContent)
+}
+
+requiredSession(oneOff, usingCookies) { username =>
+  ...
+}
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Exercise: Sing In – 1
+
+- In `Accounts`:
+  - Add `password: String` to `CreateAccount`
+  - Add the reply `PasswordInvalid`
+  - Add `passwordHash: String` to `AccountCreated`
+  - Add `passwordRegex: Regex` to `Config`
+  - Adjust the behavior to use the `Regex` to validate passwords
+  - Use `Passwords.createHash` to hash `password`
+- Adjust `Api` accordingly
+- Adjust `application.conf` accordingly, use """\w{4,}"""
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Exercise: Sing In – 2
+
+- Create the object `Authenticator`
+- Add the command `AddCredentials`:
+  - `username: String`
+  - `passwordHash: String`
+- Add the command `Authenticate`:
+  - `username: String`
+  - `password: String`
+  - `replyTo: ActorRef[AuthenticateReply]`
+- Add `AuthenticateReply`:
+  - `InvalidCredentials`
+  - `Authenticated`
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Exercise: Sing In – 3
+
+- On receiving `AddCredentials` store username and hashed password
+- On receiving `Authenticate`:
+  - Look up the hashed password,
+  - verify the given one using `Passwords.verifyPassword` and
+  - send the appropriate reply
+- In `Main` create and watch an  `Authenticator` actor
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Exercise: Sing In – 4
+
+- In `Main` create and watch an  `Authenticator` actor
+- In `Accounts` use `authenticator`:
+  - Send `AddCredentials` to it when creating an account
+- Amend `Api.route` such that posting to "iam/sessions":
+  - Uses `authenticator`,
+  - completes with `Unauthorized` upon `InvalidCredentials` and
+  - sets a session and completes with `NoContent` upon `Authenticated`
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Akka Persistence
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# The Challenge
+> How can the internal state of an actor be persisted and recovered on (re)start?
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Event Sourcing
+- How it works:
+  - Every state change is represented as an event
+  - Events are persisted in sequence in an event log
+  - Persisted events are applied to the state
+- Benefits:
+  - Rebuild last state by replaying all events
+  - Time travels by replaying only some events
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Persistent Behavior
+
+``` scala
+PersistentBehaviors.receive[Command, Event, State](
+  persistenceId  = "abc",
+  initialState   = State(),
+  commandHandler = (context, state, command) => ???, // Effect[Event, State]
+  eventHandler   = (state, event) => ???             // State
+)
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Example: Setup
+
+``` scala
+object Counter {
+
+  sealed trait Command
+  sealed trait Event
+
+  final case class Increase(n: Int, replyTo: ActorRef[IncreaseReply]) extends Command
+  sealed trait IncreaseReply
+  final case object IllegalValue     extends IncreaseReply
+  final case class Increased(n: Int) extends IncreaseReply with Event
+
+  final case class State(count: Long = 0)
+
+  def apply(): Behavior[Command] =
+    PersistentBehaviors.receive("counter", State(), commandHandler, eventHandler)
+
+  ...
+}
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Example: Handling Commands
+
+``` scala
+def commandHandler: CommandHandler[Command, Event, State] = {
+  case (_, State(count), Increase(n, replyTo)) =>
+    if (n < 0 || n > count) {
+      replyTo ! IllegalValue
+      Effect.none
+    } else {
+      val increased = Increased(n)
+      Effect
+        .persist(increased)
+        .andThen(replyTo ! increased)
+    }
+}
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Example: Handling Events
+
+``` scala
+def eventHandler: (State, Event) => State = {
+  case (State(count), Increased(n)) => State(count + n)
+}
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Journal: Abstraction for the Event Log
+
+```
+extensions = [akka.persistence.Persistence]
+
+persistence {
+  journal {
+    plugin              = cassandra-journal
+    auto-start-journals = [cassandra-journal]
+  }
+
+  snapshot-store {
+    plugin                     = cassandra-snapshot-store
+    auto-start-snapshot-stores = [cassandra-snapshot-store]
+  }
+}
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Exercise: Akka Persistence
+
+- Turn `Accounts` into a persistent behavior
+- Delete `Accounts.load` and its usage in `Main`
+- Don't forget to update the configuration
+- Run Cassandra with `docker-compose up -d cassandra`
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Akka Persistence Query
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Akka Persistence Query
+
+- The enabler for CQRS in Akka
+- Asynchronous stream based query interface for journal plugins
+- Various predefined queries – journals are free to implement
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Read Journal and Queries
+
+``` scala
+implicit val readJournal: CassandraReadJournal =
+  PersistenceQuery(untypedSystem)
+    .readJournalFor[CassandraReadJournal](CassandraReadJournal.Identifier)
+
+class CassandraReadJournal(system: ExtendedActorSystem, cfg: Config)
+  extends ReadJournal
+  with PersistenceIdsQuery
+  with CurrentPersistenceIdsQuery
+  with EventsByPersistenceIdQuery
+  with CurrentEventsByPersistenceIdQuery
+  with EventsByTagQuery
+  with CurrentEventsByTagQuery
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Resumable Projections
+
+``` scala
+readJournal
+  .eventsByPersistenceId("id", lastSeqNo + 1, Long.MaxValue)
+  .collect {
+    case EventEnvelope(_, _, seqNo, SomeEvent(foo, bar)) =>
+      UpdateReadSide(seqNo, foo, bar, _: ActorRef[Done])
+  }
+  .mapAsync(1)(readSide ? _)
+  .runWith(Sink.onComplete { cause =>
+    logger.warn(s"Projection completed unexpectedly: $cause")
+    readSide ! HandleProjectionComplete
+  })
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Exercise: Akka Persistence Query
+
+- In `Accounts`:
+  - Get rid of `authenticator` and its usage
+  - Add `passwordHash: String` to `AccountCreated`
+  - When replying with  `AccountCreated` blank out the `passwordHash`
+- Change `Authenticator` to use a resumable projection:
+  - Run a stream from a `EventsByPersistenceIdQuery` for `Accounts.PersistenceId`,
+  - transforming `AccountCreated` to `AddCredentials` and
+  - asking the `authenticator` for `Done`
+  - Resume the projection on completion
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Server-Sent Events
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Server-Sent Events
+
+![Server-Sent Events](images/sse-screenshot.png "Server-Sent Events")
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Server-Sent Events: Communication
+
+![Server-Sent Events](images/server-sent-events.svg "Server-Sent Events")
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Server-Sent Events: API
+
+``` scala
+import akka.http.scaladsl.marshalling.sse.EventStreamMarshalling._
+
+path("events") {
+  get {
+    optionalHeaderValueByName(`Last-Event-ID`.name) { lastEventId =>
+      try {
+        val fromSeqNo = lastEventId.getOrElse("-1").trim.toLong + 1
+        complete {
+          Source
+            .fromIterator(() => Iterator.iterate(fromSeqNo)(_ + 1))
+            .map(id => ServerSentEvent("data", "type", id.toString))
+            .keepAlive(eventsMaxIdle, () => ServerSentEvent.heartbeat)
+        }
+      } catch {
+        case _: NumberFormatException =>
+          complete(
+            HttpResponse(
+              BadRequest,
+              entity = HttpEntity(`text/event-stream`,
+                                  "Last-Event-ID must be numeric!".getBytes(UTF_8))
+            )
+          )
+      }
+    }
+  }
+}
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Exercise: Server-Sent Events
+
+- Amend `Api.route` such that getting to "iam/accounts/events":
+  - Completes with a source of `Accounts.Event`
+  - based upon `EventsByPersistenceId` from a sequence number
+  - determined by the optional `Last-Event-ID`
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Akka Cluster
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# What is an Akka Cluster?
+
+> Akka Cluster provides a fault-tolerant decentralized peer-to-peer based cluster
+> **membership service** ...
+
+[doc.akka.io/docs/akka/current/common/cluster.html](http://doc.akka.io/docs/akka/current/common/cluster.html)
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Configration for Cluster
+
+``` json
+akka {
+  actor {
+    provider = cluster
+  }
+
+  remote {
+    artery {
+      enabled   = on
+      transport = tcp
+    }
+  }
+}
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Membership Service
+
+``` scala
+def apply(config: Config): Behavior[SelfUp] =
+  Behaviors.setup { ctx =>
+    Cluster(ctx.system).subscriptions ! Subscribe(ctx.self, classOf[SelfUp])
+    Behaviors.receiveMessage[SelfUp] { _ =>
+      logger.info(s"${ctx.system.name} has joined cluster and is up")
+      onSelfUp(config, ctx)
+      Behaviors.empty
+    }
+  }
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# How can we construct a Cluster?
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown data-state="cluster-01"><script type="text/template">
+# Some Actor Systems – not yet a Cluster
+<svg id="cluster-01">
+  <circle cx="480" cy="160" r="32" class="node hidden"/>
+  <circle cx="240" cy="240" r="32" class="node hidden"/>
+  <circle cx="720" cy="240" r="32" class="node hidden"/>
+</svg>
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown data-state="cluster-02"><script type="text/template">
+# Joining an existing Cluster
+<svg id="cluster-02">
+  <line x1="480" y1="160" x2="240" y2="240" class="fragment join" id="cluster-02-join"/>
+  <line x1="0" y1="0" x2="0" y2="0" class="fragment" id="cluster-02-joined"/>
+  <circle cx="480" cy="160" r="32" class="node member"/>
+  <circle cx="240" cy="240" r="32" class="node" id="cluster-02-joining-node"/>
+  <circle cx="720" cy="240" r="32" class="node member"/>
+  <ellipse cx="600" cy="200" rx="240" ry="80" class="cluster" id="cluster-02-cluster" transform="rotate(18 600 200)"/>
+</svg>
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# How can we bootstrap a Cluster?
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# The first Node must join itself
+<svg id="cluster-03">
+  <circle cx="240" cy="192" r="40" class="fragment join self" id="cluster-03-join"/>
+  <circle cx="480" cy="160" r="32" class="node"/>
+  <circle cx="240" cy="240" r="32" class="node" id="cluster-03-joining-node"/>
+  <circle cx="720" cy="240" r="32" class="node"/>
+  <ellipse cx="240" cy="240" rx="180" ry="60" class="fragment cluster" id="cluster-03-joined"/>
+</svg>
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# There can only be one
+
+![There can only be one](images/there-can-only-be-one.jpg "There can only be one") <!-- .element class="max" -->
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# We must avoid Races
+<svg id="cluster-04">
+  <g id="cluster-04-join" class="fragment">
+    <circle cx="240" cy="192" r="40" class="join self cluster-04-join"/>
+    <circle cx="720" cy="192" r="40" class="join self cluster-04-join"/>
+  </g>
+  <circle cx="480" cy="160" r="32" class="node"/>
+  <circle cx="240" cy="240" r="32" class="node cluster-04-joining-node"/>
+  <circle cx="720" cy="240" r="32" class="node cluster-04-joining-node"/>
+  <g id="cluster-04-joined" class="fragment">
+    <ellipse cx="240" cy="240" rx="180" ry="60" class="cluster" />
+    <ellipse cx="720" cy="240" rx="180" ry="60" class="cluster" />
+  </g>
+</svg>
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Cluster Bootstrapping requires Coordination
+
+![Coordination](images/guard.jpg "Coordination")
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Joining in a static Environment
+
+``` json
+akka.cluster.seed-nodes = [
+  "akka://system-name@127.0.0.1:25520",
+  "akka://system-name@127.0.0.1:25521"
+]
+```
+
+- **You** start the first node and have it join itself
+- **You** start further ones and have them join existing ones
+- This is simplified by configuring **known seed nodes**
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Exercise: Cluster and Seed Nodes
+
+- Configure the application to use Akka Cluster with Artery TCP
+- Change `Main` to defer all application bootstrapping until `SelfUp`
+- Try to start the application with `reStart`
+- Then start the application with `r0` and/or `r1` defined in `build.sbt`
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Joining in a dynamic Environment
+
+- Early approaches like [ConstructR](https://github.com/hseeberger/constructr) use strongly
+consistent coordination services like etcd
+- [Akka Cluster Bootstrap](https://developer.lightbend.com/docs/akka-management/current/bootstrap.html):
+  - Uses infrastructure like DNS, Kubernetes or AWS for discovery,
+  - awaits a stabel minimum number of discovered nodes,
+  - probes discovered contact points via HTTP,
+  - joins returned seed nodes via [Cluster HTTP Management](https://developer.lightbend.com/docs/akka-management/current/cluster-http-management.html) or
+  - makes the "lowest" node join itself
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Joining with Akka Management
+
+``` scala
+AkkaManagement(system.toUntyped).start()
+ClusterBootstrap(system.toUntyped).start()
+```
+
+``` json
+cluster {
+  shutdown-after-unsuccessful-join-seed-nodes = 30s
+}
+
+discovery {
+  method = akka-dns
+}
+
+management {
+  cluster {
+    bootstrap {
+      contact-point {
+        fallback-port = ${akka.management.http.port}
+      }
+    }
+  }
+}
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Exercise: Akka Management
+
+- Configure the application to use Akka Management
+- Change `Main` to start `AkkaManagement` and `ClusterBootstrap`
+- Start the application with `r0` – should still work
+- Stop the application
+- Create a Docker image by executing `docker:publishLocal` in sbt
+- Start with `docker-compose up --scale chakka-iam=2 chakka-iam`
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Cluster Singleton
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Cluster Singleton
+
+![Cluster Singleton](images/cluster-singleton.svg "Cluster Singleton")
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Creating a Cluster Singleton
+
+``` scala
+val singleton =
+  ClusterSingleton(context.system).spawn(Singleton(),
+                                         "name",
+                                         Props.empty,
+                                         ClusterSingletonSettings(context.system),
+                                         Singleton.Stop)
+
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Exercise: Cluster Singleton
+
+- Turn `Accounts` into a Cluster Singleton
+- Start one instance of the application and create an account
+- Start another instance and try to create the same account
+- Stop the first instance and try to create another account
 </script></section>
 
 <!-- ########################################################################################### -->
@@ -56,6 +1669,7 @@
   </div>
   </div>
 
+  <script src="lib/js/d3.min.js"></script>
   <script src="lib/js/head.min.js"></script>
   <script src="js/reveal.js"></script>
 
@@ -72,6 +1686,57 @@
   { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
   ]
   });
+
+  Reveal.addEventListener('cluster-01', function() {
+    d3.select('#cluster-01')
+      .selectAll('.node')
+      .data([1, 2, 3])
+      .transition()
+      .delay(function(d) { return 666 * d; })
+      .style('visibility', 'visible');
+  }, false);
+
+  Reveal.addEventListener('fragmentshown', function(event) {
+    if (event.fragment.id == 'cluster-02-joined') {
+      d3.select('#cluster-02-join').classed('hidden', true);
+      d3.select('#cluster-02-joining-node').classed('member', true);
+      d3.select('#cluster-02-cluster').attr('transform', 'rotate(0 600 200)').attr('cx', '480').attr('cy', '220').attr('rx', '360').attr('ry', '120');
+    }
+  }, false);
+  Reveal.addEventListener('fragmenthidden', function(event) {
+    if (event.fragment.id == 'cluster-02-joined') {
+      d3.select('#cluster-02-join').classed('hidden', false);
+      d3.select('#cluster-02-joining-node').classed('member', false);
+      d3.select('#cluster-02-cluster').attr('transform', 'rotate(18 600 200)').attr('cx', '600').attr('cy', '200').attr('rx', '240').attr('ry', '80');
+    }
+  }, false);
+
+  Reveal.addEventListener('fragmentshown', function(event) {
+    if (event.fragment.id == 'cluster-03-joined') {
+      d3.select('#cluster-03-join').classed('hidden', true);
+      d3.select('#cluster-03-joining-node').classed('member', true);
+    }
+  }, false);
+  Reveal.addEventListener('fragmenthidden', function(event) {
+    if (event.fragment.id == 'cluster-03-joined') {
+      d3.select('#cluster-03-join').classed('hidden', false);
+      d3.select('#cluster-03-joining-node').classed('member', false);
+    }
+  }, false);
+
+  Reveal.addEventListener('fragmentshown', function(event) {
+    if (event.fragment.id == 'cluster-04-joined') {
+      d3.selectAll('.cluster-04-join').classed('hidden', true);
+      d3.selectAll('.cluster-04-joining-node').classed('member', true);
+    }
+  }, false);
+  Reveal.addEventListener('fragmenthidden', function(event) {
+    if (event.fragment.id == 'cluster-04-joined') {
+      d3.selectAll('.cluster-04-join').classed('hidden', false);
+      d3.selectAll('.cluster-04-joining-node').classed('member', false);
+    }
+  }, false);
+
   </script>
   </body>
 </html>

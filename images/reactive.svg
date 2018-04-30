@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xl="http://www.w3.org/1999/xlink" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="-3.039907 -2.931441 585.3669 249.9444" width="585.3669" height="249.9444">
+  <defs>
+    <font-face font-family="HanziPen TC" font-size="24" panose-1="3 0 5 0 0 0 0 0 0 0" units-per-em="1000" underline-position="-100" underline-thickness="50" slope="0" x-height="600" cap-height="860" ascent="1060.0021" descent="-340.0007" font-weight="700">
+      <font-face-src>
+        <font-face-name name="HanziPenTC-W5"/>
+      </font-face-src>
+    </font-face>
+    <marker orient="auto" overflow="visible" markerUnits="strokeWidth" id="FilledArrow_Marker" stroke-linejoin="miter" stroke-miterlimit="10" viewBox="-1 -3 7 6" markerWidth="7" markerHeight="6" color="#666">
+      <g>
+        <path d="M 4.8 0 L 0 -1.8 L 0 1.8 Z" fill="currentColor" stroke="currentColor" stroke-width="1"/>
+      </g>
+    </marker>
+  </defs>
+  <metadata> Produced by OmniGraffle 7.7.1 
+    <dc:date>2018-04-30 10:59:23 +0000</dc:date>
+  </metadata>
+  <g id="Arbeitsfl_che_1" fill-opacity="1" stroke-dasharray="none" stroke="none" stroke-opacity="1" fill="none">
+    <title>Arbeitsfläche 1</title>
+    <g id="Arbeitsfl_che_1: Ebene 1">
+      <title>Ebene 1</title>
+      <g id="Graphic_3">
+        <path d="M 199.51622 -9758978e-10 L 380.93963 .36499747 M 380.2918 -.26403074 L 379.6733 45.104887 M 379.97636 44.73304 L 200.13472 45.172784 M 200.44212 46.16333 L 199.99075 -.9658502 M 199.64129 -.15935428 L 380.40834 .1844607 M 380.49286 -.38799373 L 379.80495 44.60879 M 380.10164 44.72143 L 200.55778 45.10933 M 200.5352 46.038637 L 200.0734 -.12450586" stroke="#666" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        <text transform="translate(205 6)" fill="#666">
+          <tspan font-family="HanziPen TC" font-size="24" font-weight="700" fill="#666" x="34.636" y="25">responsive</tspan>
+        </text>
+      </g>
+      <g id="Graphic_4">
+        <path d="M -.2876154 99.99989 L 180.80157 100.06851 M 180.1538 99.53306 L 180.1739 145.65546 M 180.88917 145.35694 L -1.0199591 144.9742 M -.16849368 145.28554 L .0012671473 99.65943 M -.16258071 99.78332 L 180.27907 99.86206 M 180.30753 99.40804 L 180.3278 145.23042 M 181.0141 145.26743 L -.04237853 144.86837 M -.08260331 145.1604 L .06078411 99.87476" stroke="#666" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        <text transform="translate(5 106)" fill="#666">
+          <tspan font-family="HanziPen TC" font-size="24" font-weight="700" fill="#666" x="44.14" y="25">resilient</tspan>
+        </text>
+      </g>
+      <g id="Graphic_5">
+        <path d="M 399.15855 100.00106 L 580.6635 99.77205 M 580.0283 99.33022 L 579.6615 145.95597 M 580.052 144.97753 L 399.57536 144.77922 M 400.23466 145.1577 L 399.9976 99.53476 M 399.2835 99.8513 L 580.1497 99.53965 M 580.2597 99.20605 L 579.85065 144.85255 M 580.1769 144.9351 L 400.3576 144.75242 M 400.31336 145.03295 L 400.04817 99.8754" stroke="#666" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        <text transform="translate(405 106)" fill="#666">
+          <tspan font-family="HanziPen TC" font-size="24" font-weight="700" fill="#666" x="53.344" y="25">elastic</tspan>
+        </text>
+      </g>
+      <g id="Graphic_6">
+        <path d="M 199.35472 199.99829 L 380.52545 200.47912 M 379.8935 200.12735 L 380.1701 245.50653 M 380.9648 244.59884 L 199.17069 244.58385 M 199.62905 245.02986 L 200.00486 199.4101 M 199.47994 199.79034 L 380.02067 200.34224 M 380.07753 200.002 L 380.3735 244.47326 M 381.0898 244.47852 L 199.75772 244.51146 M 199.70058 244.90442 L 200.03555 199.87426" stroke="#666" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        <text transform="translate(205 206)" fill="#666">
+          <tspan font-family="HanziPen TC" font-size="24" font-weight="700" fill="#666" x="8.644" y="25">message-driven</tspan>
+        </text>
+      </g>
+      <g id="Line_8">
+        <line x1="90.70968" y1="99.5" x2="189.45448" y2="29.9298" marker-end="url(#FilledArrow_Marker)" stroke="#666" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+      </g>
+      <g id="Line_10">
+        <line x1="490" y1="100" x2="390.54552" y2="29.9298" marker-end="url(#FilledArrow_Marker)" stroke="#666" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+      </g>
+      <g id="Line_11">
+        <line x1="200" y1="222.5" x2="101.2552" y2="152.9298" marker-end="url(#FilledArrow_Marker)" stroke="#666" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+      </g>
+      <g id="Line_12">
+        <line x1="380" y1="222.5" x2="478.7448" y2="152.9298" marker-end="url(#FilledArrow_Marker)" stroke="#666" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+      </g>
+    </g>
+  </g>
+</svg>

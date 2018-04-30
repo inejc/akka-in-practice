@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xl="http://www.w3.org/1999/xlink" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="3.5415423 -3.310359 579.79046 251.4245" width="579.79046" height="251.4245">
+  <defs>
+    <font-face font-family="HanziPen TC" font-size="24" panose-1="3 0 5 0 0 0 0 0 0 0" units-per-em="1000" underline-position="-100" underline-thickness="50" slope="0" x-height="600" cap-height="860" ascent="1060.0021" descent="-340.0007" font-weight="700">
+      <font-face-src>
+        <font-face-name name="HanziPenTC-W5"/>
+      </font-face-src>
+    </font-face>
+    <marker orient="auto" overflow="visible" markerUnits="strokeWidth" id="FilledArrow_Marker" stroke-linejoin="miter" stroke-miterlimit="10" viewBox="-1 -3 7 6" markerWidth="7" markerHeight="6" color="#b1001c">
+      <g>
+        <path d="M 4.8 0 L 0 -1.8 L 0 1.8 Z" fill="currentColor" stroke="currentColor" stroke-width="1"/>
+      </g>
+    </marker>
+    <marker orient="auto" overflow="visible" markerUnits="strokeWidth" id="FilledArrow_Marker_2" stroke-linejoin="miter" stroke-miterlimit="10" viewBox="-1 -3 7 6" markerWidth="7" markerHeight="6" color="#4e8f00">
+      <g>
+        <path d="M 4.8 0 L 0 -1.8 L 0 1.8 Z" fill="currentColor" stroke="currentColor" stroke-width="1"/>
+      </g>
+    </marker>
+    <font-face font-family="HanziPen TC" font-size="20" panose-1="3 0 5 0 0 0 0 0 0 0" units-per-em="1000" underline-position="-100" underline-thickness="50" slope="0" x-height="600" cap-height="860" ascent="1060.0021" descent="-340.0007" font-weight="700">
+      <font-face-src>
+        <font-face-name name="HanziPenTC-W5"/>
+      </font-face-src>
+    </font-face>
+  </defs>
+  <metadata> Produced by OmniGraffle 7.7.1 
+    <dc:date>2018-04-30 11:33:29 +0000</dc:date>
+  </metadata>
+  <g id="Arbeitsfl_che_1" fill-opacity="1" stroke-dasharray="none" stroke="none" stroke-opacity="1" fill="none">
+    <title>Arbeitsfläche 1</title>
+    <g id="Arbeitsfl_che_1: Ebene 1">
+      <title>Ebene 1</title>
+      <g id="Graphic_10">
+        <path d="M 199.38938 -.0015004715 L 320.97322 .29726717 M 320.38264 -.4340595 L 320.1429 45.708694 M 321.11607 45.087756 L 199.80198 44.79864 M 200.2366 45.518534 L 199.99824 -.3386165 M 199.51454 -.19220943 L 320.50414 .052622505 M 320.62725 -.5584381 L 320.3399 44.9608 M 321.2409 45.030817 L 200.35757 44.79764 M 200.2794 45.39396 L 200.11007 -.12492242" stroke="#666" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        <text transform="translate(205 6)" fill="#666">
+          <tspan font-family="HanziPen TC" font-size="24" font-weight="700" fill="#666" x="8.92" y="25">ActorRef</tspan>
+        </text>
+      </g>
+      <g id="Graphic_9">
+        <path d="M 15.6444 124.91695 C -5.67298 120.90211 5.493194 99.41453 34.9224 105.625 C 37.75013 99.19488 73.373675 100.48219 73.5348 105.625 C 97.34113 97.59553 125.30451 112.1312 105.5856 120.08305 C 128.00418 123.57837 104.91959 141.2561 86.25 139.375 C 84.72772 144.47617 50.73602 146.64876 47.6952 139.375 C 30.29136 144.98207 -10.619503 132.5569 15.6444 124.91695 M 15.6444 124.91695 C -5.42298 120.65211 5.743194 99.16453 35.1724 105.375 C 38.00013 98.94488 73.623675 100.23219 73.7848 105.375 C 97.59113 97.34553 125.55451 111.8812 105.8356 119.83305 C 128.25418 123.32837 105.16959 141.0061 86.5 139.125 C 84.97772 144.22617 50.98602 146.39876 47.9452 139.125 C 30.54136 144.73207 -10.369503 132.3069 15.8944 124.66695" stroke="#666" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        <text transform="translate(5 106)" fill="#666">
+          <tspan font-family="HanziPen TC" font-size="24" font-weight="700" fill="#666" x="22.096" y="25">Sender</tspan>
+        </text>
+      </g>
+      <g id="Graphic_8">
+        <path d="M 459.74705 2397101e-10 L 580.24934 -.11395436 M 579.6267 -1.0283 L 580.1642 45.60757 M 581.0404 44.839524 L 459.61134 45.194177 M 460.4384 45.774184 L 459.99196 -.8392321 M 459.872 -.19908921 L 579.7622 -.30256684 M 579.841 -1.1543292 L 580.2942 44.71695 M 581.1657 44.81339 L 460.55805 45.15455 M 460.49553 45.649833 L 460.0103 -.12390168" stroke="#666" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        <text transform="translate(465 6)" fill="#666">
+          <tspan font-family="HanziPen TC" font-size="24" font-weight="700" fill="#666" x="11.704" y="25">Behavior</tspan>
+        </text>
+      </g>
+      <g id="Graphic_7">
+        <path d="M 199.55088 199.99932 L 320.3874 200.18298 M 319.76705 199.9245 L 319.658 246.05708 M 320.12762 245.2198 L 199.766 245.3882 M 200.03313 245.90204 L 199.99948 199.2854 M 199.6759 199.85818 L 319.8915 200.01984 M 319.90372 199.79952 L 319.89634 245.0957 M 320.2527 245.14656 L 200.15777 245.2705 M 200.09747 245.7771 L 200.02293 199.87507" stroke="#666" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        <text transform="translate(205 206)" fill="#666">
+          <tspan font-family="HanziPen TC" font-size="24" font-weight="700" fill="#666" x="16.324" y="25">Mailbox</tspan>
+        </text>
+      </g>
+      <g id="Graphic_11">
+        <path d="M 459.58555 200 L 580.83516 200.0004 M 580.2583 199.36314 L 579.634 245.2592 M 580.2789 244.70766 L 458.6473 244.60276 M 459.6264 245.39068 L 460.0038 199.53672 M 459.71055 199.7511 L 580.37465 199.85522 M 580.4556 199.23912 L 579.8627 244.58342 M 580.4038 244.69782 L 459.75783 244.55668 M 459.66203 245.26495 L 460.09746 199.87477" stroke="#666" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        <text transform="translate(465 206)" fill="#666">
+          <tspan font-family="HanziPen TC" font-size="24" font-weight="700" fill="#666" x="3.364" y="25">Dispatcher</tspan>
+        </text>
+      </g>
+      <g id="Line_12">
+        <path d="M 60 101.1588 L 60 85.25881 L 60 22.5 L 200 22.5 L 184.1 22.5 L 187.1 22.5" marker-end="url(#FilledArrow_Marker)" stroke="#b1001c" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+      </g>
+      <g id="Line_13">
+        <line x1="260" y1="45" x2="260" y2="186.6" marker-end="url(#FilledArrow_Marker)" stroke="#b1001c" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+      </g>
+      <g id="Line_14">
+        <line x1="459.5" y1="222.5" x2="333.4" y2="222.5" marker-end="url(#FilledArrow_Marker_2)" stroke="#4e8f00" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+      </g>
+      <g id="Line_15">
+        <line x1="260" y1="200" x2="450.35177" y2="31.062805" marker-end="url(#FilledArrow_Marker_2)" stroke="#4e8f00" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+      </g>
+      <g id="Graphic_17">
+        <rect x="350.5" y="203" width="79" height="39" fill="white"/>
+        <text transform="translate(355.5 208.5)" fill="#4e8f00">
+          <tspan font-family="HanziPen TC" font-size="20" font-weight="700" fill="#4e8f00" x=".35" y="21">schedule</tspan>
+        </text>
+      </g>
+      <g id="Graphic_18">
+        <path d="M 292.08374 145.45354 L 402.0287 47.87739 L 427.91626 77.04646 L 317.9713 174.62261 Z" fill="white"/>
+        <text transform="translate(299.47418 146.24821) rotate(-41.589055)" fill="#4e8f00">
+          <tspan font-family="HanziPen TC" font-size="20" font-weight="700" fill="#4e8f00" x=".15" y="21">dequeue and run</tspan>
+        </text>
+      </g>
+      <g id="Graphic_19">
+        <rect x="83.5706" y="3" width="46" height="39" fill="white"/>
+        <text transform="translate(88.5706 8.5)" fill="#b1001c">
+          <tspan font-family="HanziPen TC" font-size="20" font-weight="700" fill="#b1001c" x=".25" y="21">send</tspan>
+        </text>
+      </g>
+      <g id="Graphic_20">
+        <rect x="240.5" y="83.25" width="39" height="78" fill="white"/>
+        <text transform="translate(246 156.25) rotate(-90)" fill="#b1001c">
+          <tspan font-family="HanziPen TC" font-size="20" font-weight="700" fill="#b1001c" x=".28" y="21">enqueue</tspan>
+        </text>
+      </g>
+    </g>
+  </g>
+</svg>
