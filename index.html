@@ -453,8 +453,9 @@ Behaviors
 <section data-markdown><script type="text/template">
 # Exercise: Accounts: Message Protocol
 
+- For this and following exercises use the `chakka-iam` project
 - Create the object `Accounts`
-- Define `Command` and its only inhabitant `CreateAccount`:
+- Define `Command` and its only subtype `CreateAccount`:
   - Add `username: String`
   - Add `replyTo: ActorRef[CreateAccountReply]`
 - Define `CreateAccountReply` and its two inhabitants `UsernameTaken` and `AccountCreated`
@@ -615,7 +616,7 @@ akka {
   ...
 }
 
-chakka-iam {
+ {
   some-duration = 1 second
 }
 ```
@@ -1747,6 +1748,56 @@ val singleton =
 - Start one instance of the application and create an account
 - Start another instance and try to create the same account
 - Stop the first instance and try to create another account
+</script></section>
+
+<!-- ########################################################################################### -->
+</section>
+<section>
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# More Exercises
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Exercise: Bootstrap chakka-chat
+
+- Add `nickname: String` to `CreateAcccount` and `AccountCreated`
+- For the following exercises use the `chakka-chat` project
+- Create a basic `Api` completing GET to "chat" with `OK`
+- Create a `Main` which bootstraps the system and runs the `Api`
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Exercise: Connector – SSE Client
+
+- Create a `Connector` actor
+- Run a resumable projection
+  - from IAM events (SSE via the iam/accounts/events endpoint)
+  - to a mapping of username to nickname
+- Use the Alpakka SSE connector
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Exercise: Connector – Websockets
+
+- Turn `Connector` into a state machine:
+  - Accepting a `Connect` command conveying `username` and `replyTo`,
+  - waiting for another `Connect` command,
+  - replying to both requesters with `Connected`,
+  - conveying cross connectes `Sink` and `Source` for `String`s,
+  - where sinks first emit "[Connected with $name]" (nickname or username as fallback)
+  - or with `PartnerNotFound` after a configurable timeout
+- Amend `Api` to offer websocket connections under "chat/connect"
+  - using `extractUpgradeToWebSocket` and
+  - interacting with `Connector`
+- To cross connect the sinks and sources see [Akka issue 24853](https://github.com/akka/akka/issues/24853)
 </script></section>
 
 <!-- ########################################################################################### -->
