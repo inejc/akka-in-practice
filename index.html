@@ -78,6 +78,34 @@
 <!-- ########################################################################################### -->
 
 <section data-markdown><script type="text/template">
+# Agenda
+
+- Introduction
+- Akka Actors (Akka Typed)
+- Testing
+- Configuration
+- Coordinated Shutdown
+- Akka Streams
+- Akka HTTP
+- Akka HTTP Session
+- Akka Persistence
+- Akka Persistence Query
+- Server-Sent Events
+- Akka Cluster
+- Cluster Singleton
+</script></section>
+
+<!-- ########################################################################################### -->
+<section>
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Introduction
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
 # What is Akka?
 
 >Akka is a toolkit for building highly concurrent, distributed and resilient message-driven
@@ -139,17 +167,12 @@ actor can send a message to another one.
 </script></section>
 
 <!-- ########################################################################################### -->
+</section>
+<section>
+<!-- ########################################################################################### -->
 
 <section data-markdown><script type="text/template">
-# Benefits of using Actors
-
-- Loose coupling through
-  - share-nothing and
-  - asynchronous messaging
-- Resilience because of
-  - compartmentalization and
-  - delegation of failure handling
-- Elasticity thanks to location transparency
+# Akka Actors (Akka Typed)
 </script></section>
 
 <!-- ########################################################################################### -->
@@ -452,6 +475,15 @@ Behaviors
 </script></section>
 
 <!-- ########################################################################################### -->
+</section>
+<section>
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Testing
+</script></section>
+
+<!-- ########################################################################################### -->
 
 <section data-markdown><script type="text/template">
 # Testing
@@ -540,6 +572,15 @@ object PingPongActorTests extends TestSuite with ActorTestKit {
 </script></section>
 
 <!-- ########################################################################################### -->
+</section>
+<section>
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Configuration
+</script></section>
+
+<!-- ########################################################################################### -->
 
 <section data-markdown><script type="text/template">
 # Configuration
@@ -590,6 +631,15 @@ val config = loadConfigOrThrow[Config]("chakka-iam")
 </script></section>
 
 <!-- ########################################################################################### -->
+</section>
+<section>
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Coordinated Shutdown
+</script></section>
+
+<!-- ########################################################################################### -->
 
 <section data-markdown><script type="text/template">
 # Coordinated Shutdown
@@ -627,6 +677,9 @@ shutdown.run(TopLevelActorTerminated)
 - Create `TopLevelActorTerminated` extending `Reason`
 </script></section>
 
+<!-- ########################################################################################### -->
+</section>
+<section>
 <!-- ########################################################################################### -->
 
 <section data-markdown><script type="text/template">
@@ -815,6 +868,9 @@ val reply: Future[Reply] =
   - log the result
 </script></section>
 
+<!-- ########################################################################################### -->
+</section>
+<section>
 <!-- ########################################################################################### -->
 
 <section data-markdown><script type="text/template">
@@ -1011,6 +1067,15 @@ pathPrefix("iam") {
 </script></section>
 
 <!-- ########################################################################################### -->
+</section>
+<section>
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+# Akka HTTP Session
+</script></section>
+
+<!-- ########################################################################################### -->
 
 <section data-markdown><script type="text/template">
 # Akka HTTP Session
@@ -1113,6 +1178,9 @@ requiredSession(oneOff, usingCookies) { username =>
   - sets a session and completes with `NoContent` upon `Authenticated`
 </script></section>
 
+<!-- ########################################################################################### -->
+</section>
+<section>
 <!-- ########################################################################################### -->
 
 <section data-markdown><script type="text/template">
@@ -1247,6 +1315,9 @@ persistence {
 </script></section>
 
 <!-- ########################################################################################### -->
+</section>
+<section>
+<!-- ########################################################################################### -->
 
 <section data-markdown><script type="text/template">
 # Akka Persistence Query
@@ -1320,6 +1391,9 @@ readJournal
 </script></section>
 
 <!-- ########################################################################################### -->
+</section>
+<section>
+<!-- ########################################################################################### -->
 
 <section data-markdown><script type="text/template">
 # Server-Sent Events
@@ -1387,6 +1461,9 @@ path("events") {
   - determined by the optional `Last-Event-ID`
 </script></section>
 
+<!-- ########################################################################################### -->
+</section>
+<section>
 <!-- ########################################################################################### -->
 
 <section data-markdown><script type="text/template">
@@ -1616,6 +1693,9 @@ management {
 </script></section>
 
 <!-- ########################################################################################### -->
+</section>
+<section>
+<!-- ########################################################################################### -->
 
 <section data-markdown><script type="text/template">
 # Cluster Singleton
@@ -1656,6 +1736,8 @@ val singleton =
 - Stop the first instance and try to create another account
 </script></section>
 
+<!-- ########################################################################################### -->
+</section>
 <!-- ########################################################################################### -->
 
 <section data-markdown><script type="text/template">
